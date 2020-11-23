@@ -7,6 +7,9 @@ import os
 import re
 import subprocess
 
+proxies={
+    "http":"127.0.0.1:7890"
+}
 headers = {
     'user-agent': "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1",
     'Connections': 'keep-alive'
@@ -35,8 +38,8 @@ def get_real_address(shareurl):
 获取 user_id 和 sec_uid
 '''
 def get_user_id_sec_uid(realurl):
-    patOfUserId = "/user/(.*?)\?i"
-    patOfSecId = "sec_uid=(.*?)&u"
+    patOfUserId = "/user/(.*?)\?"
+    patOfSecId = "sec_uid=(.*?)&"
     user_id = re.compile(patOfUserId,re.S).findall(realurl)[0]
     sec_uid = re.compile(patOfSecId,re.S).findall(realurl)[0]
     return user_id,sec_uid
@@ -105,8 +108,11 @@ class Douyin:
 if __name__ == '__main__':
     shareurl = str(input("shareurl:"))
     realurl = get_real_address(shareurl)
+    print(realurl)
     user_id, sec_uid = get_user_id_sec_uid(realurl)
+    print(user_id,sec_uid)
     signature = str(generateSignature(user_id))
+    print(signature)
     douyin = Douyin()
     max_cursor = douyin.page_num(sec_uid=sec_uid,random_field=signature,max_cursor=0)
     # 判断停止构造网址的条件
